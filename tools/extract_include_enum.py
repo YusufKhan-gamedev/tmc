@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import pycparser_fake_libc
 import pycparser
 
 class EnumVisitor(pycparser.c_ast.NodeVisitor):

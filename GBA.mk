@@ -80,7 +80,7 @@ clean:
 # ===============
 
 ASINCLUDE := -I $(BUILD_DIR)/assets -I $(BUILD_DIR)/enum_include
-ASFLAGS := -mcpu=arm7tdmi --defsym $(GAME_VERSION)=1 --defsym REVISION=$(REVISION) --defsym $(GAME_LANGUAGE)=1 $(ASINCLUDE)
+ASFLAGS := --defsym $(GAME_VERSION)=1 --defsym REVISION=$(REVISION) --defsym $(GAME_LANGUAGE)=1 $(ASINCLUDE)
 
 # TODO try solve this without the glob
 ENUM_ASM_SRCS := $(wildcard include/*.h)
@@ -95,15 +95,15 @@ $(BUILD_DIR)/%.o: %.s $$(deps) $(ENUM_ASM_HEADERS)
 
 $(BUILD_DIR)/enum_include/%.inc: include/%.h
 	@mkdir -p $(dir $@)
-	$(ENUM_PROCESSOR) $< $(CC) "-D__attribute__(x)=" "-D$(GAME_VERSION)" "-E" "-nostdinc" "-Itools/agbcc" "-Itools/agbcc/include" "-iquote include" > $@
+	$(ENUM_PROCESSOR) $< $(CC) "-D__attribute__(x)=" "-D$(GAME_VERSION)" "-E" "-nostdinc" "-Itools/agbcc" "-Itools/agbcc/include" "-iquote include" "-Ifakelibc" > $@
 
 # =============
 # build C files
 # =============
 
 # agbcc includes are separate because we don't want dependency scanning on them
-CINCLUDE := -I include -I $(BUILD_DIR)
-CPPFLAGS := -I tools/agbcc -I tools/agbcc/include $(CINCLUDE) -nostdinc -undef -D$(GAME_VERSION) -DREVISION=$(REVISION) -D$(GAME_LANGUAGE)
+CINCLUDE := -I include -I $(BUILD_DIR) -I /usr/include/
+CPPFLAGS := -I tools/agbcc -I tools/agbcc/include -I /usr/include $(CINCLUDE) -undef -D$(GAME_VERSION) -DREVISION=$(REVISION) -D$(GAME_LANGUAGE)
 CFLAGS := -O2 -Wimplicit -Wparentheses -Werror -Wno-multichar -g3
 
 interwork := $(BUILD_DIR)/src/interrupts.o \
